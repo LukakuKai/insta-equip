@@ -24,7 +24,7 @@ public abstract class HeldItemRendererMixin {
 	private float equipProgressMainHand;
 
 	@Shadow
-	private float prevEquipProgressMainHand;
+	private float lastEquipProgressMainHand;
 
 	@Shadow
 	private ItemStack mainHand;
@@ -49,7 +49,7 @@ public abstract class HeldItemRendererMixin {
 			this.mainHand = current;
 			this.instantequip$skipRaise = true;
 			this.equipProgressMainHand = 1.0F;
-			this.prevEquipProgressMainHand = 1.0F;
+			this.lastEquipProgressMainHand = 1.0F;
 		}
 	}
 
@@ -68,7 +68,7 @@ public abstract class HeldItemRendererMixin {
 		// Keep the item fully raised while the (reset) attack cooldown recovers,
 		// otherwise vanilla would drag it down again to match the cooldown.
 		this.equipProgressMainHand = 1.0F;
-		this.prevEquipProgressMainHand = 1.0F;
+		this.lastEquipProgressMainHand = 1.0F;
 
 		if (player.getAttackCooldownProgress(0.0F) >= 1.0F) {
 			this.instantequip$skipRaise = false;
