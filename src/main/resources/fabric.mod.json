@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "instantequip",
+  "version": "${version}",
+  "name": "Instant Equip",
+  "description": "Removes the hand raise animation when you switch to an item (mace, sword, axe, ...). The item is instantly fully raised.",
+  "authors": ["LukakuKai"],
+  "license": "MIT",
+  "environment": "client",
+  "mixins": [
+    {
+      "config": "instantequip.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21"
+  }
+}
