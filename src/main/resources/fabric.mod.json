@@ -3,10 +3,13 @@
   "id": "instantequip",
   "version": "${version}",
   "name": "Instant Equip",
-  "description": "Removes the hand raise animation when you switch to an item (mace, sword, axe, ...). The item is instantly fully raised.",
+  "description": "Removes the hand raise animation when you switch to an item (mace, sword, axe, ...). Press K to choose which item types are affected.",
   "authors": ["LukakuKai"],
   "license": "MIT",
   "environment": "client",
+  "entrypoints": {
+    "client": ["dev.instantequip.InstantEquipClient"]
+  },
   "mixins": [
     {
       "config": "instantequip.mixins.json",
@@ -15,6 +18,7 @@
   ],
   "depends": {
     "fabricloader": ">=0.18.0",
+    "fabric-api": "*",
     "minecraft": "~1.21.11",
     "java": ">=21"
   }
