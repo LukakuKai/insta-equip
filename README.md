@@ -12,6 +12,9 @@ There you can switch the effect ON/OFF per item type: Mace, Swords, Axes, Pickax
 Shovels, Hoes, Spears, Trident, Bow, Crossbow, Shield, Blocks, Empty hand and Other items.
 The button "No dip after attacks" keeps enabled items fully raised at all times
 (vanilla lowers the item briefly after every attack).
+The button "Choose individual items..." opens a list with item icons, a search field and a
+filter (Other items / Blocks / All items). Click an item to switch it ON/OFF explicitly; explicit
+choices (yellow name) win over the category setting.
 Settings are saved in `config/instantequip.json`.
 
 ## Download

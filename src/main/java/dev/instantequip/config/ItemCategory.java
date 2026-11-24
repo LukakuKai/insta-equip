@@ -1,6 +1,7 @@
 package dev.instantequip.config;
 
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 
@@ -35,8 +36,11 @@ public enum ItemCategory {
 		if (stack.isEmpty()) {
 			return EMPTY;
 		}
+		return of(stack.getItem());
+	}
 
-		String path = Registries.ITEM.getId(stack.getItem()).getPath();
+	public static ItemCategory of(Item item) {
+		String path = Registries.ITEM.getId(item).getPath();
 
 		if (path.equals("mace")) return MACE;
 		if (path.equals("sword") || path.endsWith("_sword")) return SWORD;
@@ -49,7 +53,7 @@ public enum ItemCategory {
 		if (path.equals("bow")) return BOW;
 		if (path.equals("crossbow")) return CROSSBOW;
 		if (path.equals("shield")) return SHIELD;
-		if (stack.getItem() instanceof BlockItem) return BLOCK;
+		if (item instanceof BlockItem) return BLOCK;
 
 		return OTHER;
 	}

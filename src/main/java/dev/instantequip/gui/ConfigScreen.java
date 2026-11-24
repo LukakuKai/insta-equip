@@ -68,8 +68,14 @@ public class ConfigScreen extends Screen {
 			b.setMessage(keepRaisedLabel());
 		}).dimensions(startX, keepY, BUTTON_W * 2 + GAP, BUTTON_H).build());
 
+		int itemsY = keepY + BUTTON_H + GAP;
+		this.addDrawableChild(ButtonWidget.builder(Text.literal("Choose individual items..."), b -> {
+			InstantEquipConfig.save();
+			this.client.setScreen(new ItemListScreen(this));
+		}).dimensions(startX, itemsY, BUTTON_W * 2 + GAP, BUTTON_H).build());
+
 		this.addDrawableChild(ButtonWidget.builder(Text.literal("Done"), b -> this.close())
-			.dimensions(this.width / 2 - 100, keepY + BUTTON_H + GAP + 6, 200, BUTTON_H).build());
+			.dimensions(this.width / 2 - 100, itemsY + BUTTON_H + GAP + 6, 200, BUTTON_H).build());
 	}
 
 	private static Text keepRaisedLabel() {
