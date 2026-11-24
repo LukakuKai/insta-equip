@@ -5,9 +5,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -15,11 +17,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /**
  * Removes the first-person "raise" animation of the main hand when the held item changes.
  *
- * Vanilla lowers the old item, swaps it and then raises the new one. The raise speed is also
- * tied to the attack cooldown, which restarts on every switch. After vanilla has run its
- * update, we check whether it is still busy swapping (its stored stack differs from what the
- * player really holds). If so, and the new item is enabled in the menu, we finish the swap
- * immediately and keep the item fully raised until the cooldown has recovered.
+ * Three places are covered:
+ *  1. After vanilla's per-tick update: if vanilla is still busy swapping the old item out, the
+ *     swap is finished immediately and the item is held fully raised until the attack cooldown
+ *     (which restarts on every switch and would otherwise pull the item down) has recovered.
+ *  2. Right before every first-person render, so nothing that changes the values between tick
+ *     and render (other mods, interaction code) can bring the animation back.
+ *  3. resetEquipProgress, which vanilla/other code uses to restart the raise animation.
  */
 @Mixin(HeldItemRenderer.class)
 public abstract class HeldItemRendererMixin {
@@ -37,11 +41,14 @@ public abstract class HeldItemRendererMixin {
 	@Final
 	private MinecraftClient client;
 
-	@org.spongepowered.asm.mixin.Unique
+	@Unique
 	private boolean instantequip$holdRaised = false;
 
+	@Unique
+	private int instantequip$logged = 0;
+
 	@Inject(method = "updateHeldItems", at = @At("TAIL"))
-	private void instantequip$skipRaise(CallbackInfo ci) {
+	private void instantequip$afterTick(CallbackInfo ci) {
 		ClientPlayerEntity player = this.client.player;
 		if (player == null) {
 			this.instantequip$holdRaised = false;
@@ -58,6 +65,11 @@ public abstract class HeldItemRendererMixin {
 		if (this.mainHand != current) {
 			this.mainHand = current;
 			this.instantequip$holdRaised = true;
+
+			if (this.instantequip$logged < 5) {
+				this.instantequip$logged++;
+				System.out.println("[instantequip] skipped raise animation for " + current.getItem());
+			}
 		}
 
 		if (this.instantequip$holdRaised) {
@@ -67,6 +79,32 @@ public abstract class HeldItemRendererMixin {
 			if (player.getAttackCooldownProgress(1.0F) >= 1.0F) {
 				this.instantequip$holdRaised = false;
 			}
+		}
+	}
+
+	// No descriptor on purpose: covers every renderItem overload, the handler only touches fields.
+	@Inject(method = "renderItem", at = @At("HEAD"))
+	private void instantequip$beforeRender(CallbackInfo ci) {
+		if (!this.instantequip$holdRaised) {
+			return;
+		}
+
+		ClientPlayerEntity player = this.client.player;
+		if (player != null && InstantEquipConfig.isInstant(player.getMainHandStack())) {
+			this.equipProgressMainHand = 1.0F;
+			this.lastEquipProgressMainHand = 1.0F;
+		}
+	}
+
+	@Inject(method = "resetEquipProgress", at = @At("HEAD"), cancellable = true)
+	private void instantequip$noReset(Hand hand, CallbackInfo ci) {
+		if (hand != Hand.MAIN_HAND) {
+			return;
+		}
+
+		ClientPlayerEntity player = this.client.player;
+		if (player != null && InstantEquipConfig.isInstant(player.getMainHandStack())) {
+			ci.cancel();
 		}
 	}
 }
