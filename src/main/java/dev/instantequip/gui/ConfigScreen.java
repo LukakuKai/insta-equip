@@ -62,8 +62,20 @@ public class ConfigScreen extends Screen {
 		this.addDrawableChild(ButtonWidget.builder(Text.literal("All OFF"), b -> setAll(false))
 			.dimensions(startX + BUTTON_W + GAP, allY, BUTTON_W, BUTTON_H).build());
 
+		int keepY = allY + BUTTON_H + GAP;
+		this.addDrawableChild(ButtonWidget.builder(keepRaisedLabel(), b -> {
+			InstantEquipConfig.toggleKeepRaised();
+			b.setMessage(keepRaisedLabel());
+		}).dimensions(startX, keepY, BUTTON_W * 2 + GAP, BUTTON_H).build());
+
 		this.addDrawableChild(ButtonWidget.builder(Text.literal("Done"), b -> this.close())
-			.dimensions(this.width / 2 - 100, allY + BUTTON_H + GAP + 6, 200, BUTTON_H).build());
+			.dimensions(this.width / 2 - 100, keepY + BUTTON_H + GAP + 6, 200, BUTTON_H).build());
+	}
+
+	private static Text keepRaisedLabel() {
+		boolean on = InstantEquipConfig.isKeepRaised();
+		return Text.literal("No dip after attacks: ")
+			.append(Text.literal(on ? "ON" : "OFF").formatted(on ? Formatting.GREEN : Formatting.RED));
 	}
 
 	private void setAll(boolean value) {

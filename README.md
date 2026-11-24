@@ -10,6 +10,8 @@ the item appears instantly fully raised, without the "pull out" movement.
 Press **K** (rebindable under Controls -> Instant Equip) to open the menu.
 There you can switch the effect ON/OFF per item type: Mace, Swords, Axes, Pickaxes,
 Shovels, Hoes, Spears, Trident, Bow, Crossbow, Shield, Blocks, Empty hand and Other items.
+The button "No dip after attacks" keeps enabled items fully raised at all times
+(vanilla lowers the item briefly after every attack).
 Settings are saved in `config/instantequip.json`.
 
 ## Download

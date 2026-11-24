@@ -27,7 +27,18 @@ public final class InstantEquipConfig {
 		}
 	}
 
+	/** Keep enabled items fully raised at all times (also removes the dip after attacking). */
+	private static boolean keepRaised = true;
+
 	private InstantEquipConfig() {
+	}
+
+	public static boolean isKeepRaised() {
+		return keepRaised;
+	}
+
+	public static void toggleKeepRaised() {
+		keepRaised = !keepRaised;
 	}
 
 	private static Path file() {
@@ -75,6 +86,9 @@ public final class InstantEquipConfig {
 					ENABLED.put(category, obj.get(category.name()).getAsBoolean());
 				}
 			}
+			if (obj.has("KEEP_RAISED")) {
+				keepRaised = obj.get("KEEP_RAISED").getAsBoolean();
+			}
 		} catch (Exception e) {
 			System.err.println("[instantequip] Could not read config, using defaults: " + e);
 		}
@@ -85,6 +99,7 @@ public final class InstantEquipConfig {
 		for (ItemCategory category : ItemCategory.values()) {
 			obj.addProperty(category.name(), isEnabled(category));
 		}
+		obj.addProperty("KEEP_RAISED", keepRaised);
 
 		try {
 			Path file = file();
